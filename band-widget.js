@@ -1,5 +1,5 @@
 /* ============================================================
- * RockBand(仮) メンバーチャットウィジェット — バンドHP統合版
+ * Noxvenir メンバーチャットウィジェット — バンドHP統合版
  * 日替わりで当番メンバーが交代します(日本時間0時、api/chat.js と同じ計算式)。
  * 配色・フォントはHP本体(index.html)のトークンに合わせています:
  *   night-deep #070B1E / night-blue #101A3F / ultramarine #26397A
@@ -16,7 +16,7 @@
       name: "カナト",
       role: "Vo.",
       firstMessage:
-        "……来てくれたんだ。俺はカナト。RockBand(仮)でボーカルやってる。\n今日は俺が店番。なんか聞きたいことあれば、どうぞ。",
+        "……来てくれたんだ。俺はカナト。Noxvenirでボーカルやってる。\n今日は俺が店番。なんか聞きたいことあれば、どうぞ。",
     },
     shogo: {
       name: "ショウゴ",
@@ -45,7 +45,7 @@
       apiUrl: "/api/chat",
       artistName: today.name,
       artistRole: today.role,
-      bandName: "RockBand(仮)",
+      bandName: "Noxvenir",
       firstMessage: today.firstMessage,
       buttonLabel: "今日は" + today.name + "と話せる",
     },
