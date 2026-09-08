@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RockBand(仮) — Official Site</title>
+<meta name="description" content="4人組ロックバンド RockBand(仮) のオフィシャルサイト。楽曲・メンバー・最新情報、そして日替わりでメンバー本人と話せるチャットも。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RockBand(仮)">
+<meta property="og:title" content="RockBand(仮) — Official Site">
+<meta property="og:description" content="4人組ロックバンド RockBand(仮) のオフィシャルサイト。楽曲・メンバー・最新情報、そして日替わりでメンバー本人と話せるチャットも。">
+<meta property="og:image" content="https://rockband-hp.vercel.app/images/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night-deep:  #070B1E;   /* 夜の底 */
+    --night-blue:  #101A3F;   /* 群青 */
+    --ultramarine: #26397A;   /* 瑠璃 */
+    --starlight:   #C9D9FF;   /* 星明かり */
+    --bird-blue:   #7FA9F2;   /* 青い鳥 */
+    --dawn-gold:   #E9CE93;   /* 夜明けの金 */
+    --ink:         #E8EDFB;
+    --ink-dim:     rgba(232, 237, 251, 0.62);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--night-deep);
+    color: var(--ink);
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 300;
+    line-height: 2;
+    letter-spacing: 0.06em;
+    overflow-x: hidden;
+  }
+
+  .serif { font-family: 'Shippori Mincho', serif; }
+  .latin { font-family: 'Cormorant Garamond', serif; }
+
+  /* ---------- star field ---------- */
+  .sky { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--starlight);
+    animation: twinkle var(--d, 5s) ease-in-out infinite;
+    opacity: 0.4;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50%      { opacity: 0.9;  transform: scale(1.25); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .star { animation: none; opacity: 0.5; }
+    html { scroll-behavior: auto; }
+  }
+
+  main { position: relative; z-index: 1; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    isolation: isolate;
+  }
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    background-image: url('images/hero.jpg');
+    background-size: cover;
+    background-position: 72% 50%;
+    z-index: -1;
+  }
+  .hero-glow {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(20% 28% at 72% 30%, rgba(127, 169, 242, 0.33), transparent 72%);
+    animation: heroBreath 5.6s ease-in-out infinite;
+  }
+  @keyframes heroBreath { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.8; } }
+  .hero-mote {
+    position: absolute; z-index: -1; pointer-events: none; border-radius: 50%;
+    background: #DCE8FF; filter: blur(0.6px); opacity: 0;
+    box-shadow: 0 0 10px 3px rgba(127, 169, 242, 0.85), 0 0 26px 8px rgba(127, 169, 242, 0.35);
+    animation: heroFall var(--md, 12s) linear infinite;
+  }
+  .hero-mote.m1 { width: 6px; height: 6px; left: 78%; top: 34%; --md: 11s; --dx: -26vh; --dy: 26vh; }
+  .hero-mote.m2 { width: 4px; height: 4px; left: 70%; top: 28%; --md: 14s; --dx: -20vh; --dy: 30vh; animation-delay: 3s; }
+  .hero-mote.m3 { width: 5px; height: 5px; left: 83%; top: 40%; --md: 12s; --dx: -32vh; --dy: 24vh; animation-delay: 6s; }
+  .hero-mote.m4 { width: 3px; height: 3px; left: 74%; top: 38%; --md: 16s; --dx: -18vh; --dy: 32vh; animation-delay: 9s; }
+  .hero-mote.m5 { width: 4px; height: 4px; left: 80%; top: 30%; --md: 13s; --dx: -26vh; --dy: 28vh; animation-delay: 12s; }
+  @keyframes heroFall {
+    0%   { transform: translate(0, 0); opacity: 0; }
+    6%   { opacity: 1; }
+    55%  { opacity: 0.65; }
+    100% { transform: translate(var(--dx, -26vh), var(--dy, 26vh)); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-glow, .hero-mote { animation: none; }
+    .hero-glow { opacity: 0.35; }
+  }
+  @media (max-width: 900px) {
+    .hero-img { background-position: 80% 50%; }
+    .hero-glow { background: radial-gradient(26% 30% at 55% 30%, rgba(127, 169, 242, 0.33), transparent 72%); }
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg,
+      rgba(7, 11, 30, 0.25) 0%,
+      rgba(7, 11, 30, 0.05) 40%,
+      rgba(7, 11, 30, 0.72) 82%,
+      var(--night-deep) 100%);
+  }
+  .hero-inner {
+    padding: 0 clamp(1.5rem, 6vw, 6rem) clamp(4rem, 10vh, 7rem);
+    max-width: 1200px;
+  }
+  .hero-eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.42em;
+    color: var(--bird-blue);
+    margin-bottom: 1.2rem;
+  }
+  .hero-title {
+    font-size: clamp(2.6rem, 8vw, 6rem);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    color: var(--ink);
+    text-shadow: 0 0 42px rgba(127, 169, 242, 0.45);
+  }
+  .hero-title .kari { opacity: 0.55; font-size: 0.62em; }
+  .hero-tagline {
+    margin-top: 1.6rem;
+    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    letter-spacing: 0.18em;
+    color: var(--ink-dim);
+  }
+  .hero-ctas {
+    margin-top: 2.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+  }
+  .hero-cta {
+    display: inline-block;
+    color: var(--starlight);
+    text-decoration: none;
+    border: 1px solid rgba(201, 217, 255, 0.35);
+    border-radius: 999px;
+    padding: 0.65rem 1.9rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.24em;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+  }
+  .hero-cta:hover, .hero-cta:focus-visible {
+    background: rgba(127, 169, 242, 0.14);
+    box-shadow: 0 0 28px rgba(127, 169, 242, 0.35);
+  }
+  .hero-cta:focus-visible { outline: 2px solid var(--bird-blue); outline-offset: 3px; }
+
+  /* ---------- shared section ---------- */
+  section { padding: clamp(5rem, 12vh, 9rem) clamp(1.5rem, 6vw, 6rem); }
+  .narrow { max-width: 700px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.42em;
+    color: var(--bird-blue);
+    margin-bottom: 2.2rem;
+  }
+  .section-label .latin { font-size: 1.05em; font-style: italic; margin-right: 0.8em; }
+
+  h2 {
+    font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    line-height: 1.9;
+    margin-bottom: 2rem;
+  }
+  .lead { color: var(--ink-dim); font-size: clamp(0.95rem, 1.8vw, 1.05rem); }
+  .lead + .lead { margin-top: 1.4em; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1.1s ease, transform 1.1s ease;
+  }
+  .reveal.on { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ---------- members ---------- */
+  .members-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 2.5vw, 2rem);
+    max-width: 1100px;
+    margin: 3.5rem auto 0;
+  }
+  @media (max-width: 900px) { .members-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .members-grid { grid-template-columns: 1fr; max-width: 320px; } }
+  .member-card {
+    background: rgba(16, 26, 63, 0.45);
+    border: 1px solid rgba(127, 169, 242, 0.18);
+    border-radius: 6px;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+  }
+  .member-photo {
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+  .member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    filter: saturate(0.88) contrast(1.02);
+    transition: transform 0.8s ease, filter 0.8s ease;
+  }
+  .member-card:hover .member-photo img { transform: scale(1.04); filter: saturate(1) contrast(1.02); }
+  @media (prefers-reduced-motion: reduce) { .member-photo img { transition: none; } }
+  .member-body { padding: 1.3rem 1.2rem 1.5rem; }
+  .member-role {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.34em;
+    color: var(--bird-blue);
+    text-transform: uppercase;
+  }
+  .member-name {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 500;
+    font-size: 1.25rem;
+    letter-spacing: 0.2em;
+    margin: 0.35rem 0 0.1rem;
+  }
+  .member-age {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-dim);
+    margin-bottom: 0.8rem;
+  }
+  .member-bio {
+    font-size: 0.8rem;
+    line-height: 2;
+    letter-spacing: 0.05em;
+    color: var(--ink-dim);
+  }
+
+  /* ---------- discography ---------- */
+  .discog-list {
+    max-width: 800px;
+    margin: 3.5rem auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+  .discog-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.2rem;
+    padding: 1.3rem 1.6rem;
+    background: rgba(16, 26, 63, 0.45);
+    border: 1px solid rgba(127, 169, 242, 0.18);
+    border-radius: 6px;
+  }
+  .discog-item.live-only { border-style: dashed; opacity: 0.82; }
+  .discog-main { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  .discog-date {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--dawn-gold);
+    white-space: nowrap;
+  }
+  .discog-title {
+    font-family: 'Shippori Mincho', serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+  }
+  .discog-tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    color: var(--bird-blue);
+    border: 1px solid rgba(127, 169, 242, 0.4);
+    border-radius: 999px;
+    padding: 0.18rem 0.7rem;
+  }
+  .discog-tag.live { color: var(--ink-dim); border-color: rgba(201, 217, 255, 0.25); }
+  .discog-link {
+    color: var(--starlight);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    border-bottom: 1px solid rgba(201, 217, 255, 0.3);
+    padding-bottom: 2px;
+    transition: color 0.4s ease, border-color 0.4s ease;
+    white-space: nowrap;
+  }
+  .discog-link:hover, .discog-link:focus-visible { color: var(--bird-blue); border-color: rgba(127, 169, 242, 0.6); }
+  .discog-note { color: var(--ink-dim); font-size: 0.78rem; letter-spacing: 0.1em; }
+
+  /* ---------- links / footer ---------- */
+  .links { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 3rem; }
+  .links a {
+    color: var(--starlight);
+    text-decoration: none;
+    border: 1px solid rgba(201, 217, 255, 0.35);
+    border-radius: 999px;
+    padding: 0.7rem 2rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.22em;
+    transition: background 0.4s ease, box-shadow 0.4s ease, color 0.4s ease;
+  }
+  .links a:hover, .links a:focus-visible {
+    background: rgba(127, 169, 242, 0.14);
+    box-shadow: 0 0 28px rgba(127, 169, 242, 0.35);
+    color: #fff;
+  }
+  .links a:focus-visible { outline: 2px solid var(--bird-blue); outline-offset: 3px; }
+
+  footer {
+    text-align: center;
+    padding: 3rem 1.5rem 4rem;
+    color: var(--ink-dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+  }
+  footer .latin { font-style: italic; font-size: 1.1em; }
+  footer .staff-line {
+    margin-bottom: 1.6rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    color: var(--ink-dim);
+  }
+  footer .staff-line .staff-label { opacity: 0.7; margin-right: 0.6em; }
+  footer .staff-line a {
+    color: var(--ink-dim);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(201, 217, 255, 0.25);
+    padding-bottom: 2px;
+    transition: color 0.4s ease, border-color 0.4s ease;
+  }
+  footer .staff-line a:hover, footer .staff-line a:focus-visible { color: var(--bird-blue); border-color: rgba(127, 169, 242, 0.6); }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky" aria-hidden="true"></div>
+
+<main>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-img" role="img" aria-label="星空を舞う、光をまとった青い鳥"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <span class="hero-mote m1" aria-hidden="true"></span>
+    <span class="hero-mote m2" aria-hidden="true"></span>
+    <span class="hero-mote m3" aria-hidden="true"></span>
+    <span class="hero-mote m4" aria-hidden="true"></span>
+    <span class="hero-mote m5" aria-hidden="true"></span>
+    <div class="hero-inner">
+      <p class="hero-eyebrow serif">Official Site</p>
+      <h1 class="hero-title serif">RockBand<span class="kari">(仮)</span></h1>
+      <p class="hero-tagline serif">名前より先に、音があった。</p>
+      <div class="hero-ctas">
+        <a class="hero-cta serif" href="#discography">♪ Discography</a>
+        <a class="hero-cta serif" href="#band">MEMBERS</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- BAND -->
+  <section id="band">
+    <div class="reveal">
+      <div class="narrow" style="text-align:center;">
+        <p class="section-label"><span class="latin">BAND</span>奏でる4人</p>
+        <h2 class="serif">RockBand<span style="opacity:.55;">(仮)</span></h2>
+        <p class="lead" style="margin-top:1.4rem;">名前より先に、音があった。ライブハウスで出会った4人は、バンド名を決めるより早く走り出してしまい——(仮)が取れないまま、今日も歌い続けている。</p>
+      </div>
+      <div class="members-grid">
+        <div class="member-card">
+          <div class="member-photo"><img src="images/kanato.jpg" alt="ボーカルのカナト。癖のある茶髪と、まっすぐな眼差し" loading="lazy"></div>
+          <div class="member-body">
+            <p class="member-role">Vocal</p>
+            <p class="member-name">カナト</p>
+            <p class="member-age">22 — 神奈川・海沿いの町出身</p>
+            <p class="member-bio">最年少。普段は口数が少なく、言葉を選んでゆっくり話す。マイクの前でだけ、誰よりも饒舌になる。歌詞を書きためるノートを肌身離さず持っている。</p>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-photo"><img src="images/shogo.jpg" alt="ギタリストのショウゴ。金髪を結び、黒いストラトを構える" loading="lazy"></div>
+          <div class="member-body">
+            <p class="member-role">Guitar</p>
+            <p class="member-name">ショウゴ</p>
+            <p class="member-age">27 — バンドの兄貴分</p>
+            <p class="member-bio">最年長。ステージでは一番派手に暴れるが、機材の手入れは誰よりも静かで丁寧。メンバーのメシと体調をいつも気にしている、バンド一の世話焼き。</p>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-photo"><img src="images/gaku.jpg" alt="ベーシストのガク。黒髪に眼鏡、首にスカーフ" loading="lazy"></div>
+          <div class="member-body">
+            <p class="member-role">Bass</p>
+            <p class="member-name">ガク</p>
+            <p class="member-age">24 — 物静かな理論派</p>
+            <p class="member-bio">読書家で、アレンジの設計士。多くを語らないが、曲の骨格はほとんど彼の手の中で組み上がる。低音で物語の足場を組み、4人ぶんの夜を静かに支える。</p>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-photo"><img src="images/yuichi.jpg" alt="ドラマーのユウイチ。屋上のドラムセットの前でスティックを持つ" loading="lazy"></div>
+          <div class="member-body">
+            <p class="member-role">Drums</p>
+            <p class="member-name">ユウイチ</p>
+            <p class="member-age">23 — バンドの心拍</p>
+            <p class="member-bio">体育会系のムードメーカーで、裏表がない。自称「営業部長」で、Xの更新は俺の仕事だと思っている。彼のカウントが鳴るまで、この4人の曲は始まらない。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCOGRAPHY -->
+  <section id="discography">
+    <div class="reveal">
+      <div class="narrow" style="text-align:center;">
+        <p class="section-label"><span class="latin">DISCOGRAPHY</span>楽曲</p>
+        <h2 class="serif">積み重ねてきた、音たち。</h2>
+      </div>
+      <div class="discog-list">
+        <div class="discog-item">
+          <div class="discog-main">
+            <span class="discog-date latin">2026.08.08</span>
+            <span class="discog-title">bluebird</span>
+            <span class="discog-tag">1st Digital Single</span>
+          </div>
+          <a class="discog-link" href="https://bluebird-lp.vercel.app/" target="_blank" rel="noopener">特設サイトへ →</a>
+        </div>
+        <div class="discog-item">
+          <div class="discog-main">
+            <span class="discog-date latin">2026.09.05</span>
+            <span class="discog-title">ただのうた。</span>
+            <span class="discog-tag">Digital Single</span>
+          </div>
+          <span class="discog-note">配信リンク準備中</span>
+        </div>
+        <div class="discog-item live-only">
+          <div class="discog-main">
+            <span class="discog-title">焦点距離</span>
+            <span class="discog-tag live">LIVE</span>
+          </div>
+          <span class="discog-note">音源未発表・ライブで先行披露中</span>
+        </div>
+        <div class="discog-item live-only">
+          <div class="discog-main">
+            <span class="discog-title">音の矢</span>
+            <span class="discog-tag live">LIVE</span>
+          </div>
+          <span class="discog-note">音源未発表・ライブで先行披露中</span>
+        </div>
+        <div class="discog-item live-only">
+          <div class="discog-main">
+            <span class="discog-title">FAR AND AWAY</span>
+            <span class="discog-tag live">LIVE</span>
+          </div>
+          <span class="discog-note">音源未発表・ライブで先行披露中</span>
+        </div>
+        <div class="discog-item live-only">
+          <div class="discog-main">
+            <span class="discog-title">Groove On!</span>
+            <span class="discog-tag live">LIVE</span>
+          </div>
+          <span class="discog-note">音源未発表・ライブで先行披露中</span>
+        </div>
+      </div>
+      <div class="links">
+        <a href="https://www.youtube.com/@RockBand_bluebird" target="_blank" rel="noopener" aria-label="YouTubeチャンネルを見る">YouTube</a>
+        <a href="https://x.com/rockband_jp" target="_blank" rel="noopener" aria-label="公式Xを見る">X</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="staff-line"><span class="staff-label">STAFF</span><a href="https://www.instagram.com/rockband_bluebird_staff" target="_blank" rel="noopener">Instagram</a></p>
+    <span class="latin">RockBand(仮)</span>&nbsp;&nbsp;&copy;&nbsp;2026&nbsp;All Rights Reserved
+  </footer>
+
+</main>
+
+<script>
+  // star field
+  (function () {
+    const sky = document.getElementById('sky');
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 90; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.2 + 0.6;
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.top = Math.random() * 100 + 'vh';
+      s.style.setProperty('--d', (Math.random() * 6 + 3).toFixed(1) + 's');
+      s.style.animationDelay = (Math.random() * 6).toFixed(1) + 's';
+      frag.appendChild(s);
+    }
+    sky.appendChild(frag);
+  })();
+
+  // scroll reveal
+  (function () {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.18 });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  })();
+</script>
+
+<!-- RockBand(仮) メンバーチャットウィジェット(日替わり当番) -->
+<script src="band-widget.js" defer></script>
+
+</body>
+</html>
