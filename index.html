@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RockBand(仮) — Official Site</title>
-<meta name="description" content="4人組ロックバンド RockBand(仮) のオフィシャルサイト。楽曲・メンバー・最新情報、そして日替わりでメンバー本人と話せるチャットも。">
-<!-- バンド名正式決定まで非公開運用のため、検索エンジンにインデックスさせない(URLを知っている人はアクセス可) -->
+<title>Noxvenir — Official Site</title>
+<meta name="description" content="4人組ロックバンド Noxvenir のオフィシャルサイト。楽曲・メンバー・最新情報、そして日替わりでメンバー本人と話せるチャットも。">
+<!-- 正式発表まで非公開運用のため、検索エンジンにインデックスさせない(URLを知っている人はアクセス可) -->
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="RockBand(仮)">
-<meta property="og:title" content="RockBand(仮) — Official Site">
-<meta property="og:description" content="4人組ロックバンド RockBand(仮) のオフィシャルサイト。楽曲・メンバー・最新情報、そして日替わりでメンバー本人と話せるチャットも。">
+<meta property="og:site_name" content="Noxvenir">
+<meta property="og:title" content="Noxvenir — Official Site">
+<meta property="og:description" content="4人組ロックバンド Noxvenir のオフィシャルサイト。楽曲・メンバー・最新情報、そして日替わりでメンバー本人と話せるチャットも。">
 <meta property="og:url" content="https://rockband-hp.vercel.app/">
 <meta property="og:image" content="https://rockband-hp.vercel.app/images/ogp.jpg">
 <meta property="og:image:width" content="1200">
@@ -83,12 +83,12 @@
     inset: 0;
     background-image: url('images/hero.jpg');
     background-size: cover;
-    background-position: 72% 50%;
+    background-position: center 58%;
     z-index: -1;
   }
   .hero-glow {
     position: absolute; inset: 0; z-index: -1; pointer-events: none;
-    background: radial-gradient(20% 28% at 72% 30%, rgba(127, 169, 242, 0.33), transparent 72%);
+    background: radial-gradient(26% 30% at 50% 26%, rgba(127, 169, 242, 0.33), transparent 72%);
     animation: heroBreath 5.6s ease-in-out infinite;
   }
   @keyframes heroBreath { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.8; } }
@@ -98,11 +98,12 @@
     box-shadow: 0 0 10px 3px rgba(127, 169, 242, 0.85), 0 0 26px 8px rgba(127, 169, 242, 0.35);
     animation: heroFall var(--md, 12s) linear infinite;
   }
-  .hero-mote.m1 { width: 6px; height: 6px; left: 78%; top: 34%; --md: 11s; --dx: -26vh; --dy: 26vh; }
-  .hero-mote.m2 { width: 4px; height: 4px; left: 70%; top: 28%; --md: 14s; --dx: -20vh; --dy: 30vh; animation-delay: 3s; }
-  .hero-mote.m3 { width: 5px; height: 5px; left: 83%; top: 40%; --md: 12s; --dx: -32vh; --dy: 24vh; animation-delay: 6s; }
-  .hero-mote.m4 { width: 3px; height: 3px; left: 74%; top: 38%; --md: 16s; --dx: -18vh; --dy: 32vh; animation-delay: 9s; }
-  .hero-mote.m5 { width: 4px; height: 4px; left: 80%; top: 30%; --md: 13s; --dx: -26vh; --dy: 28vh; animation-delay: 12s; }
+  /* 軌道はロゴの流星ライン(右上の星)から左下へこぼれ落ちる */
+  .hero-mote.m1 { width: 6px; height: 6px; left: 63%; top: 15%; --md: 11s; --dx: -26vh; --dy: 22vh; }
+  .hero-mote.m2 { width: 4px; height: 4px; left: 57%; top: 12%; --md: 14s; --dx: -20vh; --dy: 26vh; animation-delay: 3s; }
+  .hero-mote.m3 { width: 5px; height: 5px; left: 67%; top: 19%; --md: 12s; --dx: -32vh; --dy: 20vh; animation-delay: 6s; }
+  .hero-mote.m4 { width: 3px; height: 3px; left: 60%; top: 17%; --md: 16s; --dx: -18vh; --dy: 28vh; animation-delay: 9s; }
+  .hero-mote.m5 { width: 4px; height: 4px; left: 64%; top: 13%; --md: 13s; --dx: -26vh; --dy: 24vh; animation-delay: 12s; }
   @keyframes heroFall {
     0%   { transform: translate(0, 0); opacity: 0; }
     6%   { opacity: 1; }
@@ -110,12 +111,35 @@
     100% { transform: translate(var(--dx, -26vh), var(--dy, 26vh)); opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-glow, .hero-mote { animation: none; }
+    .hero-glow, .hero-mote, .hero-logo { animation: none; }
     .hero-glow { opacity: 0.35; }
   }
   @media (max-width: 900px) {
-    .hero-img { background-position: 80% 50%; }
-    .hero-glow { background: radial-gradient(26% 30% at 55% 30%, rgba(127, 169, 242, 0.33), transparent 72%); }
+    .hero-img { background-position: center 62%; }
+  }
+
+  /* ---------- hero logo(Noxvenirロゴマーク) ---------- */
+  .hero-logo-wrap {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    margin: 0;
+    pointer-events: none;
+  }
+  .hero-logo {
+    display: block;
+    width: clamp(190px, 28vw, 400px);
+    height: auto;
+    animation: logoBreath 6s ease-in-out infinite;
+  }
+  @keyframes logoBreath {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(127, 169, 242, 0.38)) drop-shadow(0 0 46px rgba(127, 169, 242, 0.16)); }
+    50%      { filter: drop-shadow(0 0 32px rgba(127, 169, 242, 0.62)) drop-shadow(0 0 64px rgba(127, 169, 242, 0.28)); }
+  }
+  @media (max-width: 640px) {
+    .hero-logo-wrap { top: 8%; }
   }
 
   .hero::after {
@@ -139,16 +163,6 @@
     color: var(--bird-blue);
     margin-bottom: 1.2rem;
   }
-  .hero-title {
-    font-size: clamp(2.6rem, 8vw, 6rem);
-    font-weight: 300;
-    font-style: italic;
-    letter-spacing: 0.04em;
-    line-height: 1.1;
-    color: var(--ink);
-    text-shadow: 0 0 42px rgba(127, 169, 242, 0.45);
-  }
-  .hero-title .kari { opacity: 0.55; font-size: 0.62em; }
   .hero-tagline {
     margin-top: 1.6rem;
     font-size: clamp(0.95rem, 2vw, 1.15rem);
@@ -379,16 +393,16 @@
 
   <!-- HERO -->
   <header class="hero">
-    <div class="hero-img" role="img" aria-label="星空を舞う、光をまとった青い鳥"></div>
+    <div class="hero-img" role="img" aria-label="地平線の彼方から満ちてゆく夜と、瞬き始める星々"></div>
     <div class="hero-glow" aria-hidden="true"></div>
     <span class="hero-mote m1" aria-hidden="true"></span>
     <span class="hero-mote m2" aria-hidden="true"></span>
     <span class="hero-mote m3" aria-hidden="true"></span>
     <span class="hero-mote m4" aria-hidden="true"></span>
     <span class="hero-mote m5" aria-hidden="true"></span>
+    <h1 class="hero-logo-wrap"><img class="hero-logo" src="images/noxvenir-logo.png" alt="Noxvenir"></h1>
     <div class="hero-inner">
       <p class="hero-eyebrow serif">Official Site</p>
-      <h1 class="hero-title serif">RockBand<span class="kari">(仮)</span></h1>
       <p class="hero-tagline serif">名前より先に、音があった。</p>
       <div class="hero-ctas">
         <a class="hero-cta serif" href="#discography">♪ Discography</a>
@@ -402,8 +416,8 @@
     <div class="reveal">
       <div class="narrow" style="text-align:center;">
         <p class="section-label"><span class="latin">BAND</span>奏でる4人</p>
-        <h2 class="serif">RockBand<span style="opacity:.55;">(仮)</span></h2>
-        <p class="lead" style="margin-top:1.4rem;">名前より先に、音があった。ライブハウスで出会った4人は、バンド名を決めるより早く走り出してしまい——(仮)が取れないまま、今日も歌い続けている。</p>
+        <h2 class="serif latin">Noxvenir</h2>
+        <p class="lead" style="margin-top:1.4rem;">名前より先に、音があった。ライブハウスで出会った4人は、バンド名を決めるより早く走り出してしまった——長い夜を越えて、その音にようやくついた名前が「Noxvenir」。</p>
       </div>
       <div class="members-grid">
         <div class="member-card">
@@ -508,7 +522,7 @@
 
   <footer>
     <p class="staff-line"><span class="staff-label">STAFF</span><a href="https://www.instagram.com/rockband_bluebird_staff" target="_blank" rel="noopener">Instagram</a></p>
-    <span class="latin">RockBand(仮)</span>&nbsp;&nbsp;&copy;&nbsp;2026&nbsp;All Rights Reserved
+    <span class="latin">Noxvenir</span>&nbsp;&nbsp;&copy;&nbsp;2026&nbsp;All Rights Reserved
   </footer>
 
 </main>
