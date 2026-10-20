@@ -5,7 +5,9 @@
 //   ・静的サイト / Vite / CRA → プロジェクト直下の /api/chat.js
 //   ・Next.js (Pages Router)  → /pages/api/chat.js
 // 必要な環境変数: ANTHROPIC_API_KEY (Vercelダッシュボードで設定)
+// 任意: KV_REST_API_URL / KV_REST_API_TOKEN (Upstash Redis。1日の回数上限と使用量の記録に使う)
 // ============================================================
+import crypto from "node:crypto";
 
 // ------- バンド共通の設定(全メンバーが共有する事実) -------
 const BAND = {
@@ -393,6 +395,81 @@ ${BAND.commonRules}
 // ------- 悪用・コスト対策の上限 -------
 const MAX_HISTORY = 20; // APIに送る直近メッセージ数
 const MAX_INPUT_LENGTH = 1000; // 1メッセージの最大文字数
+const DAILY_LIMIT = 50; // 1人(同じIP)あたり1日(日本時間)の上限回数(2026/10/22 あべっち決定)
+
+// 上限に達したときの返事(キャラのまま断る。AIは呼ばないので費用はかからない)
+const LIMIT_REPLY = {
+  kanato: "今日はたくさん話してくれて、ありがとう。……そろそろ喉を休ませたいから、続きはまた明日、聞かせて。",
+  shogo: "おっと、今日はここまでだ。話し足りねえ気持ちはわかるけどな。また明日来いよ、待ってるからさ。",
+  gaku: "今日の分の会話は、ここで上限みたいだ。数字は嘘をつかない。続きは明日にしよう。",
+  yuichi: "うわー今日いっぱい話したね!楽しかった!けど今日はここまで!また明日な、絶対来てよ!",
+};
+
+// ------- 利用回数の記録(Upstash Redis。誰かは分からない形=IPのハッシュだけを残す) -------
+// 環境変数 KV_REST_API_URL / KV_REST_API_TOKEN(Vercel Marketplace の Upstash Redis を接続すると入る)が無ければ、
+// 同じサーバーが動いている間だけのメモリで数える(取りこぼしはあるが、無いよりまし)。
+const memCounts = new Map();
+
+function jstDate() {
+  return new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+function clientIp(req) {
+  const xff = String(req.headers["x-forwarded-for"] || "");
+  return (xff.split(",")[0] || req.headers["x-real-ip"] || "unknown").trim();
+}
+
+function hashIp(ip, day) {
+  const salt = process.env.RATE_SALT || "noxvenir-chat";
+  return crypto.createHash("sha256").update(`${salt}:${day}:${ip}`).digest("hex").slice(0, 16);
+}
+
+async function redis(commands) {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  const r = await fetch(`${url}/pipeline`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "content-type": "application/json" },
+    body: JSON.stringify(commands),
+  });
+  if (!r.ok) throw new Error(`redis ${r.status}`);
+  return r.json();
+}
+
+// 今日の回数を1増やして返す
+async function countToday(who, day) {
+  try {
+    const out = await redis([
+      ["INCR", `chat:count:${day}:${who}`],
+      ["EXPIRE", `chat:count:${day}:${who}`, 172800],
+      ["HINCRBY", `chat:stats:${day}`, who, 1],
+      ["EXPIRE", `chat:stats:${day}`, 7776000],
+    ]);
+    if (out) return Number(out[0].result);
+  } catch (e) {
+    console.error("rate count failed:", e.message);
+  }
+  const k = `${day}:${who}`;
+  memCounts.set(k, (memCounts.get(k) || 0) + 1);
+  return memCounts.get(k);
+}
+
+// トークン使用量を日ごとに記録(急増したときに原因を追えるように)
+async function recordUsage(day, usage) {
+  if (!usage) return;
+  try {
+    await redis([
+      ["HINCRBY", `chat:tokens:${day}`, "input", usage.input_tokens || 0],
+      ["HINCRBY", `chat:tokens:${day}`, "cache_write", usage.cache_creation_input_tokens || 0],
+      ["HINCRBY", `chat:tokens:${day}`, "cache_read", usage.cache_read_input_tokens || 0],
+      ["HINCRBY", `chat:tokens:${day}`, "output", usage.output_tokens || 0],
+      ["EXPIRE", `chat:tokens:${day}`, 7776000],
+    ]);
+  } catch (e) {
+    console.error("usage record failed:", e.message);
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -404,12 +481,23 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "messages is required" });
     }
 
-    const member = MEMBERS[todaysMemberId()];
+    const memberId = todaysMemberId();
+    const member = MEMBERS[memberId];
+    const day = jstDate();
+    const who = hashIp(clientIp(req), day);
+    const count = await countToday(who, day);
+    if (count > DAILY_LIMIT) {
+      return res.status(200).json({ reply: LIMIT_REPLY[memberId], limited: true });
+    }
 
     const trimmed = messages.slice(-MAX_HISTORY).map((m) => ({
       role: m.role === "user" ? "user" : "assistant",
       content: String(m.content || "").slice(0, MAX_INPUT_LENGTH),
     }));
+    // プロンプトキャッシュ: 設定集(system)と、ここまでの会話を5分間キャッシュする。
+    // 2回目以降は読み込み料金が約1/10になる(同じ人が続けて話すほど効く)。
+    const last = trimmed[trimmed.length - 1];
+    last.content = [{ type: "text", text: last.content, cache_control: { type: "ephemeral" } }];
 
     const upstream = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -421,7 +509,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
         max_tokens: 600,
-        system: buildSystemPrompt(member),
+        system: [{ type: "text", text: buildSystemPrompt(member), cache_control: { type: "ephemeral" } }],
         messages: trimmed,
       }),
     });
@@ -431,6 +519,7 @@ export default async function handler(req, res) {
       console.error("Anthropic API error:", data);
       return res.status(502).json({ error: "upstream_error" });
     }
+    await recordUsage(day, data.usage);
 
     const reply = (data.content || [])
       .filter((b) => b.type === "text")
