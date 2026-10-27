@@ -233,7 +233,8 @@
     fetch(cfg.apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: messages }),
+      // 画面に出ている当番を伝える(0時をまたいでも同じメンバーのまま話し続けるため)
+      body: JSON.stringify({ messages: messages, member: todayId }),
     })
       .then(function (r) {
         if (!r.ok) throw new Error("bad status " + r.status);

@@ -340,9 +340,13 @@ ${recent.map((p) => `・${p.date} ${p.member}: ${p.text}`).join("\n")}
 
 // ------- 日替わり当番の決定(日本時間0時に交代) -------
 const ROTATION = ["kanato", "shogo", "gaku", "yuichi"];
-function todaysMemberId() {
+// 画面が伝えてきた当番を使う。0時をまたいだ会話が別メンバーに乗っ取られないように、
+// 昨日の当番までは受け付ける。それ以外(不正・未指定)は今日の当番。
+function resolveMemberId(requested) {
   const jstDayNumber = Math.floor((Date.now() + 9 * 3600 * 1000) / 86400000);
-  return ROTATION[jstDayNumber % ROTATION.length];
+  const today = ROTATION[jstDayNumber % ROTATION.length];
+  const yesterday = ROTATION[(jstDayNumber - 1) % ROTATION.length];
+  return requested === today || requested === yesterday ? requested : today;
 }
 
 function buildSystemPrompt(member) {
@@ -479,12 +483,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
   try {
-    const { messages } = req.body || {};
+    const { messages, member: requestedMember } = req.body || {};
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: "messages is required" });
     }
 
-    const memberId = todaysMemberId();
+    const memberId = resolveMemberId(requestedMember);
     const member = MEMBERS[memberId];
     const day = jstDate();
     const who = hashIp(clientIp(req), day);
